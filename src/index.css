@@ -1,0 +1,32 @@
+.container-fluid .navbar-brand{
+    font-family: "Playwrite AU QLD", cursive;
+}
+.card.dark-mode {
+    background-color: #333;
+    color: #fff;
+}
+  
+.card.light-mode {
+    background-color: #fff;
+    color: #000;
+}
+.card-group{
+    margin-top: 3rem;
+    display: flex;
+    gap: 3rem;
+}  
+.bd-footer.light-mode{
+    background-color: 'seconday';
+    color: #353333;
+}
+.bd-footer.dark-mode {
+    background-color: #353333;
+    color: #5c6268;
+}
+.text-dark-mode {
+    color: white;
+  }
+  
+  .text-light-mode {
+    color: black;
+  }
