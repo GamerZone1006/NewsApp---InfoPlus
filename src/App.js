@@ -1,57 +1,54 @@
-import React, { useState, useEffect } from 'react';
-import './App.css';
-import Navbar from './components/Navbar';
-import Cards from './components/Cards';
-import Footer from './components/Footer';
+import * as THREE from 'three';
+import { useEffect } from 'react';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
 function App() {
-  const [Mode, setMode] = useState('light');
-  const [news, setNews] = useState([]);
-  const [selectedCategory, setSelectedCategory] = useState('General');
-
-  const categories = ['General', 'Business', 'Entertainment', 'Health', 'Education', 'Sports', 'Science', 'Technology'];
-
-  const toggleMode = () => {
-    if (Mode === 'light') {
-      setMode('dark');
-      document.body.style.backgroundColor = 'black';
-    } else {
-      setMode('light');
-      document.body.style.backgroundColor = 'white';
-    }
-  };
-
-  const fetchNews = async (category) => {
-    try {
-      const response = await fetch(
-        `https://newsapi.org/v2/top-headlines?country=in&category=${category}&apiKey=46047073fb0c4fe3948c5f464acc45dd`
-      );
-      const data = await response.json();
-      setNews(data.articles);
-    } catch (error) {
-      console.error('Error fetching news:', error);
-    }
-  };
-
   useEffect(() => {
-    fetchNews(selectedCategory);
-  }, [selectedCategory]);
+    const scene = new THREE.Scene();
+    // scene.background = new THREE.Color("white");
+    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
 
-  return (
-    <>
-      <Navbar
-        mode={Mode}
-        toggleMode={toggleMode}
-        categories={categories}
-        selectedCategory={selectedCategory}
-        onCategoryChange={setSelectedCategory}
-      />
-      <div className="container">
-        <Cards mode={Mode} news={news} />
-      </div>
-      <Footer mode={Mode} />
-    </>
-  );
+    const geometry = new THREE.SphereGeometry(1, 10, 10, 0, Math.PI *2, 0, Math.PI*2);
+    const material = new THREE.MeshBasicMaterial({ color: "#bdbdbd", wireframe: true });
+    const cube = new THREE.Mesh(geometry, material);
+    scene.add(cube);
+
+    camera.position.z = 5;
+
+    const renderer = new THREE.WebGLRenderer({antialias: true});
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    document.body.appendChild(renderer.domElement);
+
+    window.addEventListener('resize',()=>{
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+    })
+
+    const controls = new OrbitControls( camera, renderer.domElement );
+
+    let clock = new THREE.Clock();
+    function animate() {
+      renderer.render(scene, camera);
+      // cube.rotation.x += 0.01;
+      // cube.rotation.y += 0.01;
+      // cube.rotation.z = clock.getElapsedTime();
+      controls.update();
+      controls.enableDamping = true;
+      controls.enableRotate = true;
+      controls.dampingFactor = 1.5;
+      cube.scale.z = 2;
+      cube.scale.y = 2;
+    }
+    
+    renderer.setAnimationLoop(animate);
+
+    return () => {
+      document.body.removeChild(renderer.domElement);
+    };
+  }, []);
+
+  return null;
 }
 
-export default App;
+export default App; 
